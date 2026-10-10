@@ -1,0 +1,5 @@
+/.vscode
+/build
+/dist
+/test.spec
+/__pycache__

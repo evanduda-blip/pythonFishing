@@ -1,0 +1,79 @@
+{
+  "hub": {
+    "name":"hub",
+    "map": "hub",
+    "pond": {
+      "name": "Local Pond",
+      "map": {
+        "row": 25,
+        "col": 10,
+        "depth": 5
+      },
+      "prizes": [],
+      "possiblePrizes": {
+        "1": [
+          { "name": "Boot", "value": 1, "type": "trash" },
+          { "name": "Sunfish", "value": 5, "minWeight": 0.2, "maxWeight": 2.5, "type": "fish" },
+          { "name": "Minnow", "value": 3, "minWeight": 0.01, "maxWeight": 0.2, "type": "fish" },
+          { "name": "Crayfish", "value": 4, "minWeight": 0.05, "maxWeight": 0.5, "type": "fish" },
+          { "name": "Perch", "value": 6, "minWeight": 0.2, "maxWeight": 5, "type": "fish" },
+          { "name": "Rusted Spoon", "value": 2, "type": "trash" }
+        ],
+        "2": [
+          { "name": "Brook Trout", "value": 10, "minWeight": 0.5, "maxWeight": 6, "type": "fish" },
+          { "name": "Largemouth Bass", "value": 20, "minWeight": 1, "maxWeight": 12, "type": "fish" },
+          { "name": "Catfish", "value": 15, "minWeight": 1, "maxWeight": 30, "type": "fish" },
+          { "name": "Rainbow Trout", "value": 18, "minWeight": 0.5, "maxWeight": 20, "type": "fish" },
+          { "name": "Pike", "value": 25, "minWeight": 2, "maxWeight": 35, "type": "fish" },
+          { "name": "Silver Key", "value": 30, "type": "treasure" }
+        ],
+        "3": [
+          { "name": "Treasure Chest", "value": 50, "type": "treasure" },
+          { "name": "Golden Trout", "value": 100, "minWeight": 0.5, "maxWeight": 15, "type": "fish" },
+          { "name": "Ancient Coin", "value": 75, "type": "treasure" },
+          { "name": "Emerald Eel", "value": 90, "minWeight": 1, "maxWeight": 40, "type": "fish" },
+          { "name": "Dragon Carp", "value": 120, "minWeight": 5, "maxWeight": 100, "type": "fish" },
+          { "name": "Mystic Relic", "value": 150, "type": "treasure" }
+        ],
+        "4": [
+          { "name": "Ice Walleye", "value": 180, "minWeight": 1, "maxWeight": 20, "type": "fish" },
+          { "name": "Sapphire Sturgeon", "value": 220, "minWeight": 5, "maxWeight": 150, "type": "fish" },
+          { "name": "Sunken Crown", "value": 250, "type": "treasure" },
+          { "name": "Moonstone Koi", "value": 280, "minWeight": 1, "maxWeight": 35, "type": "fish" },
+          { "name": "Phantom Pike", "value": 300, "minWeight": 5, "maxWeight": 60, "type": "fish" },
+          { "name": "Pearl of the Deep", "value": 350, "type": "treasure" }
+        ],
+        "5": [
+          { "name": "Leviathan Scale", "value": 500, "type": "treasure" },
+          { "name": "Abyssal Anglerfish", "value": 600, "minWeight": 2, "maxWeight": 100, "type": "Legendary Fish" },
+          { "name": "Crown of Tides", "value": 750, "type": "treasure" },
+          { "name": "Sea Dragon", "value": 900, "minWeight": 100, "maxWeight": 1000, "type": "Legendary Fish" },
+          { "name": "Heart of the Ocean", "value": 1200, "type": "treasure" },
+          { "name": "Celestial Marlin", "value": 1500, "minWeight": 20, "maxWeight": 1200, "type": "Legendary Fish" }
+        ]
+      }
+    },
+    "shop": {
+      "image": "          .-----------------.\n         /   FISHING SHOP   \\\n        /___________________\\\n        |  ~  ~  ~  ~  ~   |\n        |  |  ><(((o>  |   |\n        |  |___________|   |\n        |    WELCOME!      |\n        '------------------'",
+      "greeting": "Shopkeeper: \"Welcome! Need a new rod?\"",
+      "options": [
+        "I would like to buy!",
+        "I would like to sell!",
+        "I am good! Have a nice day!"
+      ],
+      "inventory": {
+        "rods": {
+          "type": "rod",
+          "stock": [
+            { "name": "Bamboo Rod", "cost": 20, "strength": 1, "valueMultiplier": 1.1 },
+            { "name": "Fiberglass Rod", "cost": 50, "strength": 1, "valueMultiplier": 1.25 },
+            { "name": "Steel Rod", "cost": 90, "strength": 2, "valueMultiplier": 1.5 },
+            { "name": "Titanium Rod", "cost": 150, "strength": 2, "valueMultiplier": 1.9 },
+            { "name": "Royal Rod", "cost": 250, "strength": 3, "valueMultiplier": 2.4 },
+            { "name": "Legendary Rod", "cost": 400, "strength": 4, "valueMultiplier": 3.2 }
+          ]
+        }
+      }
+    }
+  }
+}
