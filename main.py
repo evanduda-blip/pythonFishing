@@ -173,15 +173,16 @@ colors = {
 }
 
 def playSoundEffect(sound):
-    pygame.mixer.music.set_volume(0.25)
-    sound.play()
+    if pygame.mixer.music.get_volume() != 0.0:
+        pygame.mixer.music.set_volume(0.25)
+        sound.play()
 
-    def restoreMusicVolume():
-        while pygame.mixer.get_busy():
-            time.sleep(0.01)
-        pygame.mixer.music.set_volume(1.0)
+        def restoreMusicVolume():
+            while pygame.mixer.get_busy():
+                time.sleep(0.01)
+            pygame.mixer.music.set_volume(1.0)
 
-    threading.Thread(target=restoreMusicVolume, daemon=True).start()
+        threading.Thread(target=restoreMusicVolume, daemon=True).start()
 
 
 def randomCenterWeighted(firstValue, secondValue):
@@ -324,6 +325,11 @@ def main():
                 pygame.mixer.music.stop()
                 save_game_data()
                 break
+            elif key == b'm':
+                if pygame.mixer.music.get_volume() != 0.0:
+                    pygame.mixer.music.set_volume(0)
+                else:
+                    pygame.mixer.music.set_volume(1.0)
             elif key == b' ':
                 if checkSurrounding(person.currentMap["map"], person.row, person.col, "w"):
                     fishingMinigame()
@@ -591,16 +597,3 @@ if __name__ == "__main__":
     legendaryFish = pygame.mixer.Sound(get_asset_path("07. Collect Item.mp3"))
     newItem = pygame.mixer.Sound(get_asset_path("06. Secret.mp3"))
     main()
-
-
-"""
-{
-
-    "id":"001",
-    "name":"Sunfish",
-    "type":"Normal",
-    "Largest":11
-
-}
-
-"""
