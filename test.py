@@ -1,14 +1,56 @@
 import msvcrt
 import time
 from colorama import Fore, Style, init
-import locationMaker
-import player
 import random
 import pygame
 import os
 import json
 import threading
 import sys
+from pathlib import Path
+
+
+def _get_project_directories():
+    script_dir = Path(__file__).resolve().parent
+    project_dirs = [script_dir]
+    markers = ("gameData.json", "modules", "assets", "data", "audio")
+
+    for directory in script_dir.parents:
+        has_module_files = (directory / "player.py").is_file() and (
+            directory / "locationMaker.py"
+        ).is_file()
+        if has_module_files or any((directory / marker).exists() for marker in markers):
+            project_dirs.append(directory)
+
+    return project_dirs
+
+
+def _add_module_search_path():
+    for project_dir in _get_project_directories():
+        for module_dir in (
+            project_dir,
+            project_dir / "modules",
+            project_dir / "src",
+            project_dir / "src" / "modules",
+        ):
+            if all(
+                (module_dir / module_name).is_file()
+                for module_name in ("locationMaker.py", "player.py")
+            ):
+                module_path = str(module_dir)
+                if module_path not in sys.path:
+                    sys.path.insert(0, module_path)
+                return
+
+    raise ModuleNotFoundError(
+        "Could not find locationMaker.py and player.py. Keep them together "
+        "or place both in a modules/ folder."
+    )
+
+
+_add_module_search_path()
+import locationMaker
+import player
 
 init(autoreset=True)
 pygame.mixer.init()
@@ -61,15 +103,53 @@ def save_game_data():
         json.dump(data, file, indent=4)
 
 def get_asset_path(relative_path):
-    """ Get absolute path to resource, works for dev (.py) and for PyInstaller (.exe) """
+    """Find an asset beside the script or in a standard resource folder."""
+    asset_path = Path(relative_path)
     if getattr(sys, 'frozen', False):
-        # If running as an EXE, look in the extracted temporary folder
-        base_path = sys._MEIPASS
+        search_dirs = [Path(sys._MEIPASS)]
     else:
-        # If running as a .py script, look in your normal script folder
-        base_path = os.path.dirname(os.path.abspath(__file__))
+        search_dirs = _get_project_directories()
 
-    return os.path.join(base_path, relative_path)
+    if asset_path.is_absolute():
+        if asset_path.is_file():
+            return str(asset_path)
+        raise FileNotFoundError(f"Asset not found: {asset_path}")
+
+    resource_folders = ("assets", "data", "audio")
+    for directory in search_dirs:
+        candidates = [directory / asset_path]
+        candidates.extend(
+            directory / folder / asset_path for folder in resource_folders
+        )
+        for candidate in candidates:
+            if candidate.is_file():
+                return str(candidate)
+
+    if asset_path.parent == Path("."):
+        matches = []
+        for directory in search_dirs:
+            for folder in resource_folders:
+                resource_dir = directory / folder
+                if resource_dir.is_dir():
+                    matches.extend(
+                        path
+                        for path in resource_dir.rglob(asset_path.name)
+                        if path.is_file()
+                    )
+
+        matches = list(dict.fromkeys(matches))
+        if len(matches) == 1:
+            return str(matches[0])
+        if len(matches) > 1:
+            raise ValueError(
+                f"Asset name is ambiguous; provide its folder: {relative_path}"
+            )
+
+    searched_locations = ", ".join(str(directory) for directory in search_dirs)
+    raise FileNotFoundError(
+        f"Asset not found: {relative_path}. Searched: {searched_locations} "
+        "and their assets/, data/, and audio/ folders."
+    )
 
 
 global data
