@@ -22,7 +22,6 @@ def get_save_game_path(filename="user_data.json"):
 
     if not os.path.exists(game_folder):
         os.makedirs(game_folder)
-
     return os.path.join(game_folder, filename)
 
 def load_game_data():
