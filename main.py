@@ -84,6 +84,16 @@ def load_game_data():
         person.fishingRod = oldData["player"]["fishingRod"]
         person.inventory = oldData["player"]["inventory"]
 
+def checkForSave():
+    return os.path.isfile(get_save_game_path())
+
+def deleteSaveData():
+    save_path = get_save_game_path()
+    if not os.path.isfile(save_path):
+        return False
+    os.remove(save_path)
+    return True
+
 def save_game_data():
     data = {
     "location": person.currentMap,
@@ -305,8 +315,17 @@ def changePlayerMap (map):
 
 def main():
     clearConsole()
-    
     global person
+    person = player.player()
+    pygame.mixer.music.load(get_asset_path("02. Overworld of Hyrule.mp3"))
+    pygame.mixer.music.set_volume(1.0)
+    pygame.mixer.music.play(-1)
+    global normalItem
+    normalItem = pygame.mixer.Sound(get_asset_path("04. Small Item Get.mp3"))
+    global legendaryFish
+    legendaryFish = pygame.mixer.Sound(get_asset_path("07. Collect Item.mp3"))
+    global newItem
+    newItem = pygame.mixer.Sound(get_asset_path("06. Secret.mp3"))
     load_game_data()
     
     updateBoard(person.currentMap["map"])
@@ -588,16 +607,28 @@ def populateJournal():
     return journal
 
 def homeScreen():
-    print("Hello! Welcome to python fishing. What would you like to do?")
-    print("1. ")
+    clearConsole()
+    
+    while True:
+        print("Hello! Welcome to python fishing. What would you like to do?")
+        if checkForSave():
+
+            print("1. Continue")
+            print("2. New Game")
+            userChoice = input("Enter your choice: ")
+            if userChoice == "2":
+                deleteCheck = input("Are you sure? Type 'yes' to contiue: ")
+                if deleteCheck == "yes":
+                    deleteSaveData()
+                    break
+            elif userChoice == "1":
+                break
+        else:
+            input("Press enter to play ...")
+            break
+        clearConsole()
+    main()
 
 if __name__ == "__main__":
-    global person
-    person = player.player()
-    pygame.mixer.music.load(get_asset_path("02. Overworld of Hyrule.mp3"))
-    pygame.mixer.music.set_volume(1.0)
-    pygame.mixer.music.play(-1)
-    normalItem = pygame.mixer.Sound(get_asset_path("04. Small Item Get.mp3"))
-    legendaryFish = pygame.mixer.Sound(get_asset_path("07. Collect Item.mp3"))
-    newItem = pygame.mixer.Sound(get_asset_path("06. Secret.mp3"))
-    main()
+    
+    homeScreen()
