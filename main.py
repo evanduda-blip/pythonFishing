@@ -60,7 +60,7 @@ def get_save_game_path(filename="user_data.json"):
     if not app_data_dir:
         app_data_dir = os.path.expanduser("~")
 
-    game_folder = os.path.join(app_data_dir, "MyAwesomePythonGame")
+    game_folder = os.path.join(app_data_dir, "pythonFishing")
 
     if not os.path.exists(game_folder):
         os.makedirs(game_folder)
@@ -586,6 +586,10 @@ def populateJournal():
                         "type": item["type"]
                     })
     return journal
+
+def homeScreen():
+    print("Hello! Welcome to python fishing. What would you like to do?")
+    print("1. ")
 
 if __name__ == "__main__":
     global person
