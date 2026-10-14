@@ -462,6 +462,7 @@ def fishingMinigame():
         if msvcrt.kbhit():
             key = msvcrt.getch()
             if key == b'q':
+                person.inPond = False
                 break
             if key == b' ':
                 dropHook()
@@ -500,16 +501,37 @@ def shop():
     if currentSelection == 0:
         clearConsole()
         if "rods" in person.currentMap["shop"]["inventory"]:
-            if len(person.currentMap["shop"]["inventory"]["rods"]["stock"]) > 0:
+            if len(person.currentMap["shop"]["inventory"]["rods"]["stock"]) > 0 and person.money != 0:
                 print("Which rod would you like to buy? (You have $" + str(person.money) + ")")
+                lowestValue = person.currentMap["shop"]["inventory"]["rods"]["stock"][0]["cost"]
                 for i, item in enumerate(person.currentMap["shop"]["inventory"]["rods"]["stock"]):
                     print(str(i + 1) + ": " + item["name"] + " | Cost: $" + str(item["cost"]) + " (Strength: " + str(item["strength"]) + ", Value Mulitpler: " + str(item["valueMultiplier"]) + ")")
-                userSelection = int(input("Enter the number you want to purchase: ")) - 1
-                if person.money > person.currentMap["shop"]["inventory"]["rods"]["stock"][userSelection]["cost"]:
+                    if lowestValue > item["cost"]:
+                        lowestValue = item["cost"]
+                if lowestValue > person.money:
+                    clearConsole()
+                    print("You don't have enough money to buy anything. Press enter to continue...")
+                    input()
+                    return
+                userSelection = input("Enter the number you want to purchase: ")
+                if not userSelection.isdigit():
+                    print("You didn't enter a valid number, press enter to return to map...")
+                    input()
+                    return
+                else:
+                    if 0 < int(userSelection) <= len(person.currentMap["shop"]["inventory"]["rods"]["stock"]):
+                        userSelection = int(userSelection) - 1
+                    else:
+                        print("You didn't enter a valid number, press enter to return to map...")
+                        input()
+                        return
+                if userSelection <= len(person.currentMap["shop"]["inventory"]["rods"]["stock"]) and person.money >= person.currentMap["shop"]["inventory"]["rods"]["stock"][userSelection]["cost"]:
                     person.money -= person.currentMap["shop"]["inventory"]["rods"]["stock"][userSelection]["cost"]
                     person.fishingRod = person.currentMap["shop"]["inventory"]["rods"]["stock"][userSelection]
                 else:
-                    print("You have no money to spend")
+                    print("You have no money to spend or entered an invalid input")
+            else:
+                print("There is nothing to buy with your current amount of money.")
     elif currentSelection == 1:
         currentSelectedItems = ["- "] * len(person.inventory)
         currentSelectionSell = 0
