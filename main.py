@@ -415,6 +415,7 @@ def dropHook():
                 else:
                     playSoundEffect(normalItem)
                 person.fishingJournal[findValue(person.fishingJournal, "name", caughtPrize["name"])]["discovered"] = True
+                person.fishingJournal[findValue(person.fishingJournal, "name", caughtPrize["name"])]["amountCaught"] += 1
                 if person.fishingJournal[findValue(person.fishingJournal, "name", caughtPrize["name"])]["largest"] < caughtPrize["weight"]:
                     person.fishingJournal[findValue(person.fishingJournal, "name", caughtPrize["name"])]["largest"] = caughtPrize["weight"]
         else:
@@ -593,6 +594,7 @@ def printJournal():
                 textToPrint += " (Legendary)"
             textToPrint += " | "
             textToPrint += str(entry["largest"]) + " lbs"
+            textToPrint += " (" + str(entry["amountCaught"]) + " caught)"
         else:
             textToPrint += "????"
         lines.append(textToPrint)
@@ -624,7 +626,8 @@ def populateJournal():
                         "name": item["name"],
                         "discovered": False,
                         "largest": 0,
-                        "type": item["type"]
+                        "type": item["type"],
+                        "amountCaught": 0
                     })
     return journal
 
