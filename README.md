@@ -1,5 +1,7 @@
+PYTHON FISHING
+
 A simple fishing game in the python console.
-Output contains the exe file from the latest build, which is all you need in order to run it.
+'stable' folder contains the exe file from the latest build, which is all you need in order to run it.
 
 Controls:
 
