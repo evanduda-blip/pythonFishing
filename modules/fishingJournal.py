@@ -30,7 +30,7 @@ class fishingJournal:
 
     def returnFishInformation (self, id=None, name=None):
         if id is not None:
-            return self[int(id) - 1]
+            return self.journal[int(id) - 1]
         if name is not None:
             for item in self.journal:
                 if item["name"] == name:
