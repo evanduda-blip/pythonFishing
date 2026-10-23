@@ -51,6 +51,7 @@ def _add_module_search_path():
 _add_module_search_path()
 import locationMaker
 import player
+import fishingJournal
 
 init(autoreset=True)
 pygame.mixer.init()
@@ -71,7 +72,8 @@ def load_game_data():
 
     if not os.path.exists(path):
         changePlayerMap(data["hub"])
-        person.fishingJournal = populateJournal()
+        person.fishingJournal = fishingJournal.fishingJournal()
+        person.fishingJournal.newJournal(data)
         return
     with open(path, "r") as file:
         changePlayerMap(data["hub"])
@@ -80,7 +82,8 @@ def load_game_data():
         person.row = oldData["player"]["position"]["row"]
         person.col = oldData["player"]["position"]["col"]
         person.money = oldData["player"]["money"]
-        person.fishingJournal = oldData["player"]["journal"]
+        person.fishingJournal = fishingJournal.fishingJournal()
+        person.fishingJournal.loadSavedJournal(oldData)
         person.fishingRod = oldData["player"]["fishingRod"]
         person.inventory = oldData["player"]["inventory"]
 
@@ -105,7 +108,7 @@ def save_game_data():
         "money": person.money,
         "fishingRod": person.fishingRod,
         "inventory":person.inventory,
-        "journal":person.fishingJournal
+        "journal":person.fishingJournal.returnFullList()
     }
     }
     path = get_save_game_path()
@@ -406,7 +409,7 @@ def dropHook():
                 del caughtPrize["maxWeight"]
             person.inventory.append(caughtPrize)
             if caughtPrize["type"] == "fish" or caughtPrize["type"] == "Legendary Fish":
-                if not person.fishingJournal[findValue(person.fishingJournal, "name", caughtPrize["name"])]["discovered"]:
+                if not person.fishingJournal.journal[findValue(person.fishingJournal.journal, "name", caughtPrize["name"])]["discovered"]:
                     
                     if caughtPrize["type"] == "Legendary Fish":
                         playSoundEffect(legendaryFish)
@@ -414,10 +417,10 @@ def dropHook():
                         playSoundEffect(newItem)
                 else:
                     playSoundEffect(normalItem)
-                person.fishingJournal[findValue(person.fishingJournal, "name", caughtPrize["name"])]["discovered"] = True
-                person.fishingJournal[findValue(person.fishingJournal, "name", caughtPrize["name"])]["amountCaught"] += 1
-                if person.fishingJournal[findValue(person.fishingJournal, "name", caughtPrize["name"])]["largest"] < caughtPrize["weight"]:
-                    person.fishingJournal[findValue(person.fishingJournal, "name", caughtPrize["name"])]["largest"] = caughtPrize["weight"]
+                person.fishingJournal.journal[findValue(person.fishingJournal.journal, "name", caughtPrize["name"])]["discovered"] = True
+                person.fishingJournal.journal[findValue(person.fishingJournal.journal, "name", caughtPrize["name"])]["amountCaught"] += 1
+                if person.fishingJournal.journal[findValue(person.fishingJournal.journal, "name", caughtPrize["name"])]["largest"] < caughtPrize["weight"]:
+                    person.fishingJournal.journal[findValue(person.fishingJournal.journal, "name", caughtPrize["name"])]["largest"] = caughtPrize["weight"]
         else:
             print("You got a prize!")
         time.sleep(2)
@@ -584,23 +587,7 @@ def printListSelection (index):
 
 def printJournal():
     clearConsole()
-    lines = []
-    lines.append("Your Fishing Log: ")
-    for entry in person.fishingJournal:
-        textToPrint = entry["id"] + ": "
-        if entry["discovered"]:
-            textToPrint += entry["name"]
-            if entry["type"] == "Legendary Fish":
-                textToPrint += " (Legendary)"
-            textToPrint += " | "
-            textToPrint += str(entry["largest"]) + " lbs"
-            textToPrint += " (" + str(entry["amountCaught"]) + " caught)"
-        else:
-            textToPrint += "????"
-        lines.append(textToPrint)
-
-    print_in_box("\n".join(lines) if lines else "No fish in the journal.")
-
+    print_in_box(person.fishingJournal.toString())
     while True:
         if msvcrt.kbhit():
             key = msvcrt.getch()
