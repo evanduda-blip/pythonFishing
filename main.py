@@ -278,19 +278,19 @@ def clearConsole():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def moveNorth (board):
-    if checkList2D(board, person.row - 1, person.col) and board[person.row - 1][person.col] != "w" and board[person.row - 1][person.col] != "N":
+    if checkList2D(board, person.row - 1, person.col) and board[person.row - 1][person.col] == 0:
         person.row -= 1
         
 def moveSouth (board):
-    if checkList2D(board, person.row + 1, person.col) and board[person.row + 1][person.col] != "w" and board[person.row + 1][person.col] != "N":
+    if checkList2D(board, person.row + 1, person.col) and board[person.row + 1][person.col] == 0:
         person.row += 1
 
 def moveWest (board):
-    if (checkList2D(board, person.row, person.col - 1) and board[person.row][person.col - 1] != "w"and board[person.row][person.col - 1] != "N"):
+    if checkList2D(board, person.row, person.col - 1) and board[person.row][person.col - 1] == 0:
         person.col -= 1
 
 def moveEast (board):
-    if (checkList2D(board, person.row, person.col + 1) and board[person.row][person.col + 1] != "w" and board[person.row][person.col + 1] != "N"):
+    if checkList2D(board, person.row, person.col + 1) and board[person.row][person.col + 1] == 0:
         person.col += 1
 
 def changePlayerMap (map):
