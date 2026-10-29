@@ -8,6 +8,7 @@ class player:
         self.bobberCol = 0
         self.bobberDirection = 1
         self.inventory = []
+        self.inventorySize = 3
         self.inPond = False
         self.money = 0.0
         rods = [

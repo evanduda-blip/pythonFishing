@@ -2,6 +2,25 @@
 	"hub": {
 		"name":"hub",
 		"map": "hub",
+    "npcs":[
+      {
+        "id":"backpack_vendor",
+        "name":"Backpack Merchant",
+        "row":18,
+        "col":1,
+        "greeting":"Looking to upgrade your backpack?",
+        "interaction":{
+          "type":"backpack_upgrade",
+          "upgrades":[
+            {"capacity":5, "cost":30},
+            {"capacity":7, "cost":75},
+            {"capacity":9, "cost":150},
+            {"capacity":12, "cost":250},
+            {"capacity":15, "cost":500}
+          ]
+        }
+      }
+    ],
 		"pond": {
 			"name": "Local Pond",
 			"map": {

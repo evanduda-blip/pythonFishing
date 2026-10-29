@@ -9,7 +9,6 @@ import threading
 import sys
 from pathlib import Path
 
-
 def _get_project_directories():
     script_dir = Path(__file__).resolve().parent
     project_dirs = [script_dir]
@@ -74,6 +73,7 @@ def load_game_data():
         changePlayerMap(data["hub"])
         person.fishingJournal = fishingJournal.fishingJournal()
         person.fishingJournal.newJournal(data)
+        
         return
     with open(path, "r") as file:
         changePlayerMap(data["hub"])
@@ -86,6 +86,7 @@ def load_game_data():
         person.fishingJournal.loadSavedJournal(oldData)
         person.fishingRod = oldData["player"]["fishingRod"]
         person.inventory = oldData["player"]["inventory"]
+        person.inventorySize = oldData["player"]["inventorySize"]
 
 def checkForSave():
     return os.path.isfile(get_save_game_path())
@@ -108,7 +109,8 @@ def save_game_data():
         "money": person.money,
         "fishingRod": person.fishingRod,
         "inventory":person.inventory,
-        "journal":person.fishingJournal.returnFullList()
+        "journal":person.fishingJournal.returnFullList(),
+        "inventorySize":person.inventorySize
     }
     }
     path = get_save_game_path()
@@ -164,27 +166,6 @@ def get_asset_path(relative_path):
         "and their assets/, data/, and audio/ folders."
     )
 
-
-global data
-with open(get_asset_path("gameData.json"), "r") as file:
-    data = json.load(file)
-
-colors = {
-    "0": Style.NORMAL + Fore.GREEN,
-    "1": Style.BRIGHT + Fore.CYAN,
-    "2": Style.NORMAL + Fore.CYAN,
-    "3": Style.BRIGHT + Fore.BLUE,
-    "4": Style.NORMAL + Fore.BLUE,
-    "5": Style.DIM + Fore.BLUE,
-    "P": Style.NORMAL + Fore.RED,
-    "w": Style.NORMAL + Fore.BLUE,
-    "B": Style.NORMAL + Fore.GREEN,
-    "*": Style.NORMAL + Fore.YELLOW,
-    "|": Style.NORMAL + Fore.WHITE,
-    "S": Style.DIM + Fore.RED,
-    "H": Fore.YELLOW
-}
-
 def playSoundEffect(sound):
     if pygame.mixer.music.get_volume() != 0.0:
         pygame.mixer.music.set_volume(0.25)
@@ -229,13 +210,13 @@ def checkList2D (array, row, col):
 
 def checkSurrounding (array, row, col, item):
     if checkList2D(array, row + 1, col) and array[row + 1][col] == item:
-        return True
+        return (row + 1, col)
     if checkList2D(array, row - 1, col) and array[row - 1][col] == item:
-        return True
+        return (row - 1, col)
     if checkList2D(array, row, col - 1) and array[row][col - 1] == item:
-        return True 
+        return (row, col - 1) 
     if checkList2D(array, row, col + 1) and array[row][col + 1] == item:
-        return True
+        return (row, col + 1)
     return False
 
 def getCurrentPosition(board, item):
@@ -270,29 +251,46 @@ def updateBoard (currentBoard, line_positions=None):
 
     if not person.inPond:
         stringToPrint = "Current Rod: " + person.fishingRod["name"] + "\n"
-        for i, item in enumerate(person.inventory):
-            weightText = " | " + str(item["weight"]) + " lbs" if "weight" in item else ""
-            stringToPrint += str(i + 1) + ". " + item["name"] + weightText + "\n"
+        stringToPrint += "Inventory Max Size = " + str(person.inventorySize) + "\n"
+        #reversedList = person.invetory[::-1]
+        for position, (i, item) in enumerate(reversed(list(enumerate(person.inventory)))):
+            if position < 3:
+                weightText = " | " + str(item["weight"]) + " lbs" if "weight" in item else ""
+                stringToPrint += str(i + 1) + ". " + item["name"] + weightText + "\n"
         stringToPrint += "Current Money: $" + str(person.money)
         print_in_box(stringToPrint)
+
+def printFullInventory():
+    clearConsole()
+    stringToPrint = "Here are all of the items in your backpack: \n"
+    for i, item in enumerate(person.inventory):
+        weightText = " | " + str(item["weight"]) + " lbs" if "weight" in item else ""
+        stringToPrint += str(i + 1) + ". " + item["name"] + weightText + "\n"
+    print_in_box(stringToPrint)
+    print("Press space to return home. . .")
+    while True:
+        if msvcrt.kbhit():
+            key = msvcrt.getch()
+            if key == b' ':
+                break
 
 def clearConsole():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def moveNorth (board):
-    if checkList2D(board, person.row - 1, person.col) and board[person.row - 1][person.col] != "w":
+    if checkList2D(board, person.row - 1, person.col) and board[person.row - 1][person.col] != "w" and board[person.row - 1][person.col] != "N":
         person.row -= 1
         
 def moveSouth (board):
-    if checkList2D(board, person.row + 1, person.col) and board[person.row + 1][person.col] != "w":
+    if checkList2D(board, person.row + 1, person.col) and board[person.row + 1][person.col] != "w" and board[person.row + 1][person.col] != "N":
         person.row += 1
 
 def moveWest (board):
-    if (checkList2D(board, person.row, person.col - 1) and board[person.row][person.col - 1] != "w"):
+    if (checkList2D(board, person.row, person.col - 1) and board[person.row][person.col - 1] != "w"and board[person.row][person.col - 1] != "N"):
         person.col -= 1
 
 def moveEast (board):
-    if (checkList2D(board, person.row, person.col + 1) and board[person.row][person.col + 1] != "w"):
+    if (checkList2D(board, person.row, person.col + 1) and board[person.row][person.col + 1] != "w" and board[person.row][person.col + 1] != "N"):
         person.col += 1
 
 def changePlayerMap (map):
@@ -302,6 +300,8 @@ def changePlayerMap (map):
         hub.addLocalPond()
         hub.addShop()
         hub.addHouse()
+        for npcs in map["npcs"]:
+            hub.addNPC(npcs["row"], npcs["col"])
         map["map"] = hub.returnArea()
 
     if "pond" in map and isinstance(map["pond"]["map"], dict):
@@ -347,6 +347,8 @@ def main():
                 pygame.mixer.music.stop()
                 save_game_data()
                 break
+            elif key == b'i':
+                printFullInventory()
             elif key == b'm':
                 if pygame.mixer.music.get_volume() != 0.0:
                     pygame.mixer.music.set_volume(0)
@@ -354,7 +356,8 @@ def main():
                     pygame.mixer.music.set_volume(1.0)
             elif key == b' ':
                 if checkSurrounding(person.currentMap["map"], person.row, person.col, "w"):
-                    fishingMinigame()
+                    if person.inventorySize > len(person.inventory):
+                        fishingMinigame()
                     
                 if checkSurrounding(person.currentMap["map"], person.row, person.col, "S"):
                     shop()
@@ -362,8 +365,43 @@ def main():
                 if checkSurrounding(person.currentMap["map"], person.row, person.col, "H"):
                     printJournal()
 
+                if checkSurrounding(person.currentMap["map"], person.row, person.col, "N"):
+                    npcDialouge(findNPC())
+
             clearConsole()
             updateBoard(person.currentMap["map"])
+
+def npcDialouge (npcLocation):
+    clearConsole()
+    currentNPC = person.currentMap["npcs"][npcLocation]
+    print(currentNPC["greeting"])
+    if currentNPC["interaction"]["type"] == "backpack_upgrade":
+        print("I can upgrade your backpack for $" + str(currentNPC["interaction"]["upgrades"][0]["cost"]) + ", adding " + str(currentNPC["interaction"]["upgrades"][0]["capacity"] - person.inventorySize) + " more spaces.")
+        time.sleep(1)
+        if currentNPC["interaction"]["upgrades"][0]["cost"] <= person.money:
+            playerBackpackChoice = 0
+            while playerBackpackChoice != "n" and playerBackpackChoice != "y":
+                playerBackpackChoice = input("Would you like to buy? (y/n)")
+                if playerBackpackChoice != "n" and playerBackpackChoice != "y":
+                    print("Try again...")
+            if playerBackpackChoice == "n":
+                print("Okay! Thank you for stopping by. Have fun fishing!")
+            else:
+                print("Thank you for stopping by. Enjoy your new backpack.")
+                person.inventorySize = currentNPC["interaction"]["upgrades"][0]["capacity"]
+                person.money -= currentNPC["interaction"]["upgrades"][0]["cost"]
+                del currentNPC["interaction"]["upgrades"][0]
+                time.sleep(1)
+        else:
+            print("Looks like you don't have enough money. Happy fishing!")
+    input("Press enter to return to the map . . .")
+
+
+def findNPC():
+    npcLocation = checkSurrounding(person.currentMap["map"], person.row, person.col, "N")
+    for i, currentNPC in enumerate(person.currentMap["npcs"]):
+        if currentNPC["row"] == npcLocation[0] and currentNPC["col"] == npcLocation[1]:
+            return i
 
 def hookAnimation (targetRow):
     board = person.currentMap["pond"]["map"] if person.inPond else person.currentMap["map"]
@@ -640,6 +678,32 @@ def homeScreen():
             break
         clearConsole()
     main()
+
+
+
+
+
+
+global data
+with open(get_asset_path("gameData.json"), "r") as file:
+    data = json.load(file)
+
+colors = {
+    "0": Style.NORMAL + Fore.GREEN,
+    "1": Style.BRIGHT + Fore.CYAN,
+    "2": Style.NORMAL + Fore.CYAN,
+    "3": Style.BRIGHT + Fore.BLUE,
+    "4": Style.NORMAL + Fore.BLUE,
+    "5": Style.DIM + Fore.BLUE,
+    "P": Style.NORMAL + Fore.RED,
+    "w": Style.NORMAL + Fore.BLUE,
+    "B": Style.NORMAL + Fore.GREEN,
+    "*": Style.NORMAL + Fore.YELLOW,
+    "|": Style.NORMAL + Fore.WHITE,
+    "S": Style.DIM + Fore.RED,
+    "H": Fore.YELLOW,
+    "N":Fore.CYAN
+}
 
 if __name__ == "__main__":
     
