@@ -9,4 +9,4 @@ w/a/s/d for movement on the main map<br>
 space to drop the line when fishing and interact with map<br>
 e to sell in shop<br>
 number and enter to buy from shop<br>
-
+i to view inventory
