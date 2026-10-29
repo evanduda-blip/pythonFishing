@@ -3,8 +3,7 @@ import random
 def checkList2D(array, row, col):
     return 0 <= row < len(array) and 0 <= col < len(array[row])
 
-class newLocation:
-        
+class newLocation:    
     
     def newLocationBlank (self, x, y):
         blankMap = []
@@ -78,6 +77,11 @@ class newLocation:
         for row in range (1,3):
             for col in range(17,19):
                 self.area[row][col] = "H"
+
+    #Pick the top left corner
+    #person parameter is a npc class
+    def addNPC (self, row, col):
+        self.area[row][col] = "N"
 
     def returnArea (self):
         return self.area
