@@ -1,5 +1,3 @@
-import msvcrt
-
 class fishingJournal:
     def __init__(self):
         self.journal = []
