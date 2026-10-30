@@ -12,6 +12,7 @@ run = True
 squareX = 0
 squareY = 0
 move_speed = 5
+#test
 
 while run:
     for e in pygame.event.get():
